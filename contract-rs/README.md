@@ -7,7 +7,7 @@ This smart contract stores messages from users. If the user attaches more than 0
 Install [`cargo-near`](https://github.com/near/cargo-near) and run:
 
 ```bash
-cargo near build
+cargo near build --no-locked --no-docker
 ```
 
 ## How to Test Locally?
