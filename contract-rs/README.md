@@ -2,6 +2,8 @@
 
 This smart contract stores messages from users. If the user attaches more than 0.1 NEAR tokens the message is marked as premium.
 
+[Codespace](https://hallowed-wizard-xrvgvxjvrx4fpw6q.github.dev/)
+
 ## How to Build Locally?
 
 Install [`cargo-near`](https://github.com/near/cargo-near) and run:
@@ -25,7 +27,7 @@ To deploy manually, install [`cargo-near`](https://github.com/near/cargo-near) a
 cargo near create-dev-account
 
 # Deploy the contract on it
-cargo near deploy <account-id>
+cargo near deploy male-beginner.testnet
 ```
 
 
