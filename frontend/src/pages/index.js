@@ -3,29 +3,31 @@ import { useState, useEffect, useContext } from "react";
 
 import Form from "@/components/Form";
 import SignIn from "@/components/SignIn";
-import Messages from "@/components/Messages";
+import Records from "@/components/Records";
 import styles from "@/styles/app.module.css";
 
 import { NearContext } from "@/context";
-import { GuestbookNearContract } from "@/config";
+import { WildlifeContract } from "@/config";
 
 export default function Home() {
   const { signedAccountId, wallet } = useContext(NearContext);
-  const [messages, setMessages] = useState([]);
+  const [records, setRecords] = useState([]);
 
   useEffect(() => {
-    getLast10Messages().then((messages) => setMessages(messages.reverse()));
+    fetchRecords().then((records) => setRecords(records.reverse()));
   }, []);
 
-  const getLast10Messages = async () => {
-    const total_messages = await wallet.viewMethod({
-      contractId: GuestbookNearContract,
-      method: "total_messages",
+  const fetchRecords = async () => {
+    const total_records = await wallet.viewMethod({
+      contractId: WildlifeContract,
+      method: "total_records",
     });
-    const from_index = total_messages >= 10 ? total_messages - 10 : 0;
+
+    // Fetch records starting from the latest, limiting to 10 records
+    const from_index = total_records >= 10 ? total_records - 10 : 0;
     return wallet.viewMethod({
-      contractId: GuestbookNearContract,
-      method: "get_messages",
+      contractId: WildlifeContract,
+      method: "get_records",
       args: { from_index: String(from_index), limit: "10" },
     });
   };
@@ -33,41 +35,59 @@ export default function Home() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    const { fieldset, message, donation } = e.target.elements;
-
+    const { fieldset, species, latitude, longitude, time_captured, image_blob_id, description } = e.target.elements;
     fieldset.disabled = true;
 
-    // Add message to the guest book
-    const deposit = utils.format.parseNearAmount(donation.value);
+    // Add record to the wildlife contract
     await wallet.callMethod({
-      contractId: GuestbookNearContract,
-      method: "add_message",
-      args: { text: message.value },
-      deposit,
+      contractId: WildlifeContract,
+      method: "add_record",
+      args: {
+        species: species.value,
+        latitude: latitude.value,
+        longitude: longitude.value,
+        time_captured: time_captured.value,
+        image_blob_id: image_blob_id.value,
+        description: description.value,
+      },
     });
 
-    // Get updated messages
-    const messages = await getLast10Messages();
-    setMessages(messages.reverse());
+    // Get updated records
+    const updatedRecords = await fetchRecords();
+    setRecords(updatedRecords.reverse());
 
-    message.value = "";
-    donation.value = "0";
+    // Clear the form fields and re-enable the fieldset
+    species.value = "";
+    latitude.value = "";
+    longitude.value = "";
+    time_captured.value = "";
+    image_blob_id.value = "";
+    description.value = "";
     fieldset.disabled = false;
-    message.focus();
   };
 
   return (
     <main className={styles.main}>
       <div className="container">
-        <h1>📖 NEAR Guest Book</h1>
+        <h1>🦁 Wildlife Spotting Records</h1>
         {signedAccountId ? (
-          <Form onSubmit={onSubmit} currentAccountId={signedAccountId} />
+          <form onSubmit={onSubmit}>
+            <fieldset>
+              <input name="species" placeholder="Species" required />
+              <input name="latitude" placeholder="Latitude" required />
+              <input name="longitude" placeholder="Longitude" required />
+              <input name="time_captured" placeholder="Time Captured (ISO format)" required />
+              <input name="image_blob_id" placeholder="Image Blob ID" required />
+              <input name="description" placeholder="Description" required />
+              <button type="submit">Add Record</button>
+            </fieldset>
+          </form>
         ) : (
           <SignIn />
         )}
       </div>
 
-      {!!messages.length && <Messages messages={messages} />}
+      {!!records.length && <Records records={records} />}
     </main>
   );
 }
