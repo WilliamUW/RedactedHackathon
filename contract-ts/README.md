@@ -45,7 +45,7 @@ npm run test
 You can create a testnet account and deploy the contract by running:
 
 ```bash
-near create-account <your-account.testnet> --useFaucet
+near create-account williamwang.testnet --useFaucet
 near deploy <your-account.testnet> build/release/hello_near.wasm
 ```
 
