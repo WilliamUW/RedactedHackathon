@@ -57,7 +57,7 @@ pub fn add_message(&mut self, text: String) {
 ```
 
 ```bash
-near call <dev-account> add_message '{"text": "a message"}' --amount 0.1 --accountId <account>
+near call male-beginner.testnet add_message '{"text": "a message"}' --amount 0.1
 ```
 
 ### 2. Retrieve the Stored Messages
@@ -81,7 +81,7 @@ Please note that `from_index` and `limit` are optional parameters.
 ```
 
 ```bash
-near view <dev-account> get_messages '{"from_index":0, "limit":10}'
+near view male-beginner.testnet get_messages '{"from_index":0, "limit":10}'
 ```
 
 ## Useful Links
