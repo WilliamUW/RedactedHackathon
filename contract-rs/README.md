@@ -27,7 +27,7 @@ To deploy manually, install [`cargo-near`](https://github.com/near/cargo-near) a
 cargo near create-dev-account
 
 # Deploy the contract on it
-cargo near deploy male-beginner.testnet --no-locked --no-docker
+cargo near deploy neargoredacted.testnet --no-locked --no-docker
 ```
 
 
