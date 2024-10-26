@@ -36,7 +36,6 @@ export default function Home() {
     e.preventDefault();
 
     const { fieldset, species, latitude, longitude, time_captured, image_blob_id, description } = e.target.elements;
-    fieldset.disabled = true;
 
     // Add record to the wildlife contract
     await wallet.callMethod({
