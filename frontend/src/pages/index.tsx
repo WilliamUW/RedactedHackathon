@@ -5,6 +5,7 @@ import Records from "../components/Records";
 import styles from "../styles/app.module.css";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { storeStringAndGetBlobId } from "../utility/walrus"; // Your utility function for handling image uploads
+import { uploadToIPFS } from "../utility/pinata";
 
 const genAI = new GoogleGenerativeAI(
   process.env.NEXT_PUBLIC_GEMINI_API_KEY || ""
@@ -106,7 +107,9 @@ export default function Home() {
         return;
       }
 
-      const imageBlobId = (await storeStringAndGetBlobId(image ?? "")) ?? "";
+      const imageBlobId = await storeStringAndGetBlobId(image);
+
+      alert(imageBlobId);
 
       const formattedDate = new Date().toISOString();
 
@@ -170,6 +173,7 @@ export default function Home() {
         >
           🦁 Wildlife Spotting Records
         </h1>
+        <button onClick={() => uploadToIPFS("hi")}>Upload to Pinata</button>
         {signedAccountId ? (
           <>
             {step === 1 && (
