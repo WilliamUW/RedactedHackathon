@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useRef, useEffect, useContext } from "react";
 import { utils } from "near-api-js";
 import { NearContext } from "../context";
@@ -44,6 +44,7 @@ export default function Home() {
     const totalRecords = await wallet.viewMethod({
       contractId: "neargoredacted.testnet",
       method: "total_records",
+      args: {},
     });
     const fromIndex = totalRecords >= 10 ? totalRecords - 10 : 0;
     const fetchedRecords = await wallet.viewMethod({
@@ -109,7 +110,20 @@ export default function Home() {
 
       const imageBlobId = await uploadToIPFS(image);
 
-      const formattedDate = new Date().toISOString();
+      const formattedDate = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
+
+      let latitude = "40.712776";
+      let longitude = "-74.005974";
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          latitude = position.coords.latitude.toString();
+          longitude = position.coords.longitude.toString();
+          console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+        });
+      } else {
+        console.log("Geolocation is not supported by this browser.");
+      }
 
       // Add the record to the NEAR contract
       await wallet.callMethod({
@@ -117,12 +131,14 @@ export default function Home() {
         method: "add_record",
         args: {
           species,
-          latitude: "40.7468733", // Replace with actual data if available
-          longitude: "-73.9947449", // Replace with actual data if available
+          latitude,
+          longitude,
           time_captured: formattedDate,
           image_blob_id: imageBlobId,
           description,
         },
+        gas: "300000000000000",
+        deposit: "0",
       });
 
       fetchRecords();
@@ -268,7 +284,9 @@ export default function Home() {
                   }}
                   disabled={isLoading}
                 >
-                  {isLoading ? "Loading..." : "Add Record"}
+                  {isLoading
+                    ? "Analyzing image & uploading to IPFS..."
+                    : "Add Record"}
                 </button>
               </div>
             )}
