@@ -30,11 +30,11 @@ export default function NeardexPage() {
       method: "total_records",
       args: {},
     });
-    const fromIndex = totalRecords >= 10 ? totalRecords - 10 : 0;
+    const fromIndex = 0;
     const fetchedRecords = await wallet.viewMethod({
       contractId: "neargoredacted.testnet",
       method: "get_records",
-      args: { from_index: String(fromIndex), limit: "10" },
+      args: { from_index: String(fromIndex), limit: String(totalRecords) },
     });
     setAnimals(fetchedRecords.reverse() as Animal[]);
   };

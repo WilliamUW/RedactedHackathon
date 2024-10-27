@@ -174,7 +174,9 @@ export default function HomePage() {
       `This doesn't appear to be an animal. Please try again with an animal photo. \n\nDescription: ` +
         description
     );
-    setStep(5);
+    alert(`This doesn't appear to be an animal. Please try again with an animal photo. \n\nDescription: ` +
+        description)
+    setStep(1);
   };
 
   const resetApp = () => {

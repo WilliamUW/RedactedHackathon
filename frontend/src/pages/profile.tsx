@@ -27,28 +27,6 @@ const mockUserStats: UserStats = {
 };
 
 export default function ProfilePage() {
-  const { wallet } = useContext(NearContext);
-  const [animals, setAnimals] = useState<Animal[]>([]);
-
-  useEffect(() => {
-    fetchRecords();
-  }, []);
-
-  const fetchRecords = async () => {
-    const totalRecords = await wallet.viewMethod({
-      contractId: "neargoredacted.testnet",
-      method: "total_records",
-      args: {},
-    });
-    const fromIndex = totalRecords >= 10 ? totalRecords - 10 : 0;
-    const fetchedRecords = await wallet.viewMethod({
-      contractId: "neargoredacted.testnet",
-      method: "get_records",
-      args: { from_index: String(fromIndex), limit: "10" },
-    });
-    setAnimals(fetchedRecords.reverse() as Animal[]);
-  };
-
   return (
     <div
       style={{
@@ -58,7 +36,7 @@ export default function ProfilePage() {
         fontFamily: "Arial, sans-serif",
         backgroundColor: "#f0f8ff",
         minHeight: "100vh",
-        color: "black"
+        color: "black",
       }}
     >
       <style>

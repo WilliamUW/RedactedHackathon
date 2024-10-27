@@ -41,7 +41,7 @@ export default function Records({ records }) {
                 <div>
                   <h3>${record.species}</h3>
                   <img src="${
-                    record.image_blob_id.length > 10
+                    record.image_blob_id.length > 30
                       ? record.image_blob_id
                       : DEFAULT_IMAGE
                   }" alt="${
