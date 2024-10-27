@@ -8,7 +8,10 @@ const pinata = new PinataSDK({
 
 export async function uploadToIPFS(base64Image: string) {
   try {
-    const file = new File([base64Image], "Testing.txt", { type: "text/plain" });
+    const file = new File([base64Image], "near-go-image.jpeg", {
+      type: "image/jpeg",
+    });
+
     const upload = await pinata.upload.file(file);
     console.log(upload);
     return `https://brown-real-puma-604.mypinata.cloud/ipfs/${upload.IpfsHash}`;
@@ -19,11 +22,15 @@ export async function uploadToIPFS(base64Image: string) {
 
 export async function getFileContent(blobId: string) {
   try {
-    const data = await pinata.gateways.get(
-      "bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq"
-    );
+    console.log(blobId)
+    if (blobId.length < 30) {
+      throw Error;
+    }
+    const data = await pinata.gateways.get(blobId);
     console.log(data);
+    return data;
   } catch (error) {
     console.log(error);
+    return "https://brown-real-puma-604.mypinata.cloud/ipfs/bafkreiaasi3gb54wwg63v3n3l22gm3oycz3assy5w36ddtfgf2m36rzvam";
   }
 }
