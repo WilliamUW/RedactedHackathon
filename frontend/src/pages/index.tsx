@@ -109,8 +109,6 @@ export default function Home() {
 
       const imageBlobId = await uploadToIPFS(image);
 
-      alert(imageBlobId);
-
       const formattedDate = new Date().toISOString();
 
       // Add the record to the NEAR contract
@@ -175,8 +173,6 @@ export default function Home() {
         </h1>
         <button
           onClick={async () => {
-            const response = await uploadToIPFS("hi");
-            alert(response);
           }}
         >
           Upload to Pinata
