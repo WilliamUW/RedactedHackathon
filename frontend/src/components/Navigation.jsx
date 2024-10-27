@@ -23,7 +23,7 @@ export const Navigation = () => {
   }, [signedAccountId, wallet]);
 
   return (
-    <nav className="navbar navbar-expand-lg">
+    <nav className="navbar navbar-expand-lg" style={{backgroundColor: '#f0f8ff'}}>
       <div className="container-fluid">
         <Link href="/" passHref legacyBehavior>
           <Image
