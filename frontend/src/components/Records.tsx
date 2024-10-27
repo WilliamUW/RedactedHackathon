@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import mapboxgl from "mapbox-gl";
+
+import "mapbox-gl/dist/mapbox-gl.css";
 export async function getFileContent(url) {
   try {
     const response = await fetch(url);
@@ -11,8 +14,20 @@ export async function getFileContent(url) {
 }
 
 export default function Records({ records }) {
+  const mapRef = useRef();
+  const mapContainerRef = useRef();
   const [images, setImages] = useState({});
+  useEffect(() => {
+    mapboxgl.accessToken =
+      process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+    mapRef.current = new mapboxgl.Map({
+      container: mapContainerRef.current,
+    });
 
+    return () => {
+      mapRef.current.remove();
+    };
+  }, []);
   useEffect(() => {
     const fetchImages = async () => {
       const newImages = {};
@@ -36,6 +51,12 @@ export default function Records({ records }) {
         padding: "20px",
       }}
     >
+      <div
+        id="map-container"
+        ref={mapContainerRef}
+        style={{ width: "100%", height: "600px" }}
+      />
+
       {records.map((record, index) => (
         <div
           key={index}
