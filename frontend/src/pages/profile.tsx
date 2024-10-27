@@ -15,14 +15,14 @@ const mockUserStats: UserStats = {
   totalSightings: 42,
   uniqueSpecies: 15,
   topSpecies: [
-    { name: "Lion", count: 8 },
-    { name: "Elephant", count: 6 },
-    { name: "Giraffe", count: 5 },
+    { name: "Pygmy Hippo", count: 8 },
+    { name: "King Penguin", count: 6 },
+    { name: "Panda", count: 5 },
   ],
   recentActivity: [
-    { action: "Spotted a Zebra", date: "2023-04-05" },
-    { action: "Added Rhino sighting", date: "2023-04-03" },
-    { action: "Updated profile", date: "2023-04-01" },
+    { action: "Spotted a Pygmy Hippo", date: "2026-10-26" },
+    { action: "Spotted a King Penguin", date: "2024-10-26" },
+    { action: "Updated profile", date: "2024-10-26" },
   ],
 };
 
