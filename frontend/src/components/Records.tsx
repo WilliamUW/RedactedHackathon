@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
+export const DEFAULT_IMAGE =
+  "https://static.bangkokpost.com/media/content/20240913/c1_2865088.jpg";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 export async function getFileContent(url) {
@@ -33,7 +35,7 @@ export default function Records({ records }) {
             description: `
               <div>
                 <h3>${record.species}</h3>
-                <img src="${record.image_blob_id}" alt="${record.species}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;"/>
+                <img src="${record.image_blob_id.length > 10 ? record.image_blob_id : DEFAULT_IMAGE}" alt="${record.species}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;"/>
                 <p><strong>Latitude:</strong> ${record.latitude}</p>
                 <p><strong>Longitude:</strong> ${record.longitude}</p>
                 <p><strong>Time Captured:</strong> ${record.time_captured}</p>
@@ -157,7 +159,7 @@ export default function Records({ records }) {
             Species: {record.species}
           </h3>
           <img
-            src={`${images[record.image_blob_id]}`}
+            src={`${images[record.image_blob_id]?.length > 10 ? images[record.image_blob_id] : DEFAULT_IMAGE}`}
             alt={record.species}
             style={{
               width: "100%",
