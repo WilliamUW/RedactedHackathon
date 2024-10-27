@@ -169,14 +169,14 @@ export default function Home() {
         <h1
           style={{ textAlign: "center", fontSize: "28px", fontWeight: "bold" }}
         >
-          🦁 Wildlife Spotting Records
+          🦁 Near Go!
         </h1>
-        <button
+        {/* <button
           onClick={async () => {
           }}
         >
           Upload to Pinata
-        </button>
+        </button> */}
         {signedAccountId ? (
           <>
             {step === 1 && (
