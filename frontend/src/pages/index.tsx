@@ -3,8 +3,9 @@ import Link from "next/link";
 import { Camera, Upload, Check, Home, Book, User } from "lucide-react";
 import { NearContext } from "../context";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import {uploadToIPFS} from "../utility/pinata";
-import {Animal} from "./neardex";
+import { uploadToIPFS } from "../utility/pinata";
+import { Animal } from "./neardex";
+import IntroPage from "../components/IntroPage";
 const genAI = new GoogleGenerativeAI(
   process.env.NEXT_PUBLIC_GEMINI_API_KEY || ""
 );
@@ -182,7 +183,7 @@ export default function HomePage() {
     setError(null);
   };
 
-  return (
+  return signedAccountId ? (
     <div
       style={{
         maxWidth: "600px",
@@ -373,5 +374,7 @@ export default function HomePage() {
         </div>
       )}
     </div>
+  ) : (
+    <IntroPage></IntroPage>
   );
 }
