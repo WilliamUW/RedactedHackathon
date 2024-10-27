@@ -1,10 +1,10 @@
+"use client"
 import { useState, useRef, useEffect, useContext } from "react";
 import { utils } from "near-api-js";
 import { NearContext } from "../context";
 import Records from "../components/Records";
 import styles from "../styles/app.module.css";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { storeStringAndGetBlobId } from "../utility/walrus"; // Your utility function for handling image uploads
 import { uploadToIPFS } from "../utility/pinata";
 
 const genAI = new GoogleGenerativeAI(
@@ -107,7 +107,7 @@ export default function Home() {
         return;
       }
 
-      const imageBlobId = await storeStringAndGetBlobId(image);
+      const imageBlobId = await uploadToIPFS(image);
 
       alert(imageBlobId);
 
@@ -173,7 +173,14 @@ export default function Home() {
         >
           🦁 Wildlife Spotting Records
         </h1>
-        <button onClick={() => uploadToIPFS("hi")}>Upload to Pinata</button>
+        <button
+          onClick={async () => {
+            const response = await uploadToIPFS("hi");
+            alert(response);
+          }}
+        >
+          Upload to Pinata
+        </button>
         {signedAccountId ? (
           <>
             {step === 1 && (
