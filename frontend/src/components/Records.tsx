@@ -18,9 +18,7 @@ export default function Records({ records }) {
       const newImages = {};
       for (const record of records) {
         if (record.image_blob_id && !images[record.image_blob_id]) {
-          const imageContent = await getFileContent(
-            `${record.image_blob_id}`
-          );
+          const imageContent = await getFileContent(`${record.image_blob_id}`);
           newImages[record.image_blob_id] = imageContent;
         }
       }
@@ -77,19 +75,19 @@ export default function Records({ records }) {
             }}
           />
           <p style={{ fontSize: "14px", color: "#666" }}>
-            Latitude: {record.latitude}
+            <strong>Latitude:</strong> {record.latitude}
           </p>
           <p style={{ fontSize: "14px", color: "#666" }}>
-            Longitude: {record.longitude}
+            <strong>Longitude:</strong> {record.longitude}
           </p>
           <p style={{ fontSize: "14px", color: "#666" }}>
-            Time Captured: {record.time_captured}
+            <strong>Time Captured:</strong> {record.time_captured}
           </p>
           <p style={{ fontSize: "14px", color: "#666" }}>
-            Description: {record.description}
+            <strong>Description:</strong> {record.description}
           </p>
           <p style={{ fontSize: "14px", color: "#666", marginBottom: "10px" }}>
-            User Address: {record.user_address}
+            <strong>User Address:</strong> {record.user_address}
           </p>
         </div>
       ))}
