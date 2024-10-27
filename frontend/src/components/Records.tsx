@@ -14,12 +14,11 @@ export async function getFileContent(url) {
 }
 
 export default function Records({ records }) {
-  const mapRef = useRef();
-  const mapContainerRef = useRef();
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
   const [images, setImages] = useState({});
   useEffect(() => {
-    mapboxgl.accessToken =
-      process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
     });
