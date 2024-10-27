@@ -13,3 +13,4 @@
 **/.parcel-cache
 
 **/.next/
+frontend/.env

@@ -1,21 +1,18 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Camera, CameraIcon, Loader2, Upload, Wallet } from "lucide-react";
-import Image from "next/image";
 import { utils } from "near-api-js";
-import { motion } from "framer-motion";
-import { NearContext } from "@/context";
-import Records from "@/components/Records";
-import styles from "@/styles/app.module.css";
+import { NearContext } from "../context";
+import Records from "../components/Records";
+import styles from "../styles/app.module.css";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { storeStringAndGetBlobId } from "./utility/walrus"; // Your utility function for handling image uploads
+import { storeStringAndGetBlobId } from "../utility/walrus"; // Your utility function for handling image uploads
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
+const genAI = new GoogleGenerativeAI(
+  process.env.NEXT_PUBLIC_GEMINI_API_KEY || ""
+);
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
-  systemInstruction: 'Return what animal specie the picture is, followed by a description of the image.\n\nOutput Format:\nAnimal: [animal specie]\nDescription: [image description]\n\nIf there is no animal, return "No Animal"\n\n',
+  systemInstruction:
+    'Return what animal specie the picture is, followed by a description of the image.\n\nOutput Format:\nAnimal: [animal specie]\nDescription: [image description]\n\nIf there is no animal, return "No Animal"\n\n',
 });
 
 export default function Home() {
@@ -30,11 +27,14 @@ export default function Home() {
 
   useEffect(() => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      }).catch((err) => console.error("Error accessing camera:", err));
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        })
+        .catch((err) => console.error("Error accessing camera:", err));
     }
     fetchRecords();
   }, []);
@@ -97,7 +97,11 @@ export default function Home() {
         }
       }
 
-      if (species === "Unknown" || species === "No Animal" || text.includes("No Animal")) {
+      if (
+        species === "Unknown" ||
+        species === "No Animal" ||
+        text.includes("No Animal")
+      ) {
         handleNonAnimal(description);
         return;
       }
@@ -132,7 +136,10 @@ export default function Home() {
   };
 
   const handleNonAnimal = (description?: string) => {
-    setError(`This doesn't appear to be an animal. Please try again with an animal photo. \n\nDescription: ` + description);
+    setError(
+      `This doesn't appear to be an animal. Please try again with an animal photo. \n\nDescription: ` +
+        description
+    );
     setStep(5);
   };
 
@@ -157,56 +164,169 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div className="container">
-        <h1>🦁 Wildlife Spotting Records</h1>
+      <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
+        <h1
+          style={{ textAlign: "center", fontSize: "28px", fontWeight: "bold" }}
+        >
+          🦁 Wildlife Spotting Records
+        </h1>
         {signedAccountId ? (
           <>
             {step === 1 && (
               <>
-                <video ref={videoRef} autoPlay playsInline muted className="w-full h-64 object-cover rounded-lg mb-4" />
-                <Button onClick={handleCapture} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-full">
-                  <Camera className="mr-2 h-6 w-6" /> Capture
-                </Button>
-                <Button onClick={() => fileInputRef?.current?.click()} className="w-full bg-yellow-500 hover:bg-yellow-600 text-white">
-                  <Upload className="mr-2 h-4 w-4" /> Upload
-                </Button>
-                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  style={{
+                    width: "100%",
+                    height: "300px",
+                    objectFit: "cover",
+                    borderRadius: "10px",
+                    marginBottom: "10px",
+                  }}
+                />
+                <button
+                  onClick={handleCapture}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    backgroundColor: "#d32f2f",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Capture
+                </button>
+                <button
+                  onClick={() => fileInputRef?.current?.click()}
+                  style={{
+                    width: "100%",
+                    marginTop: "10px",
+                    padding: "12px",
+                    backgroundColor: "#f57c00",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Upload
+                </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  style={{ display: "none" }}
+                />
               </>
             )}
 
             {step === 2 && image && (
-              <Card className="bg-green-100 border-4 border-green-400 rounded-xl shadow-lg animate-fade-in">
-                <CardHeader className="text-center text-xl font-bold text-purple-600">Confirm Animal Photo</CardHeader>
-                <CardContent>
-                  <Image src={image} alt="Captured" width={300} height={300} className="mb-4 max-w-full h-auto object-cover rounded-lg" />
-                  <Button onClick={handleMintNFT} className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105" disabled={isLoading}>
-                    {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : "Add Record"}
-                  </Button>
-                </CardContent>
-              </Card>
+              <div
+                style={{
+                  backgroundColor: "#e8f5e9",
+                  border: "2px solid #4caf50",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  marginTop: "20px",
+                }}
+              >
+                <h3 style={{ textAlign: "center", color: "#4caf50" }}>
+                  Confirm Animal Photo
+                </h3>
+                <img
+                  src={image}
+                  alt="Captured"
+                  style={{
+                    width: "100%",
+                    borderRadius: "10px",
+                    marginBottom: "10px",
+                  }}
+                />
+                <button
+                  onClick={handleMintNFT}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    backgroundColor: "#1976d2",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Loading..." : "Add Record"}
+                </button>
+              </div>
             )}
 
             {step === 3 && (
-              <Card className="bg-purple-100 border-4 border-purple-400 rounded-xl shadow-lg animate-fade-in">
-                <CardHeader className="text-center text-xl font-bold text-green-600">Record Added Successfully!</CardHeader>
-                <Button onClick={resetApp} className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105">
+              <div
+                style={{
+                  backgroundColor: "#ede7f6",
+                  border: "2px solid #673ab7",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  marginTop: "20px",
+                }}
+              >
+                <h3 style={{ textAlign: "center", color: "#673ab7" }}>
+                  Record Added Successfully!
+                </h3>
+                <button
+                  onClick={resetApp}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    backgroundColor: "#ff9800",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
                   Capture Another
-                </Button>
-              </Card>
+                </button>
+              </div>
             )}
 
             {step === 5 && error && (
-              <Alert variant="default" className="animate-shake">
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-                <Button onClick={resetApp} className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105">
+              <div
+                style={{
+                  backgroundColor: "#ffebee",
+                  border: "2px solid #d32f2f",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  marginTop: "20px",
+                }}
+              >
+                <h3 style={{ textAlign: "center", color: "#d32f2f" }}>Error</h3>
+                <p>{error}</p>
+                <button
+                  onClick={resetApp}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    backgroundColor: "#d32f2f",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
                   Try Again
-                </Button>
-              </Alert>
+                </button>
+              </div>
             )}
           </>
         ) : (
-          <SignIn />
+          <p>Please sign in to continue.</p>
         )}
       </div>
 

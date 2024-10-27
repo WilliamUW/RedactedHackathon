@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
-import "@/styles/globals.css";
-import { NearContext } from "@/context";
-import { Navigation } from "@/components/Navigation";
+import "../styles/globals.css";
+import { NearContext } from "../context";
+import { Navigation } from "../components/Navigation";
 
-import { Wallet } from "@/wallets/near";
-import { NetworkId, GuestbookNearContract } from "@/config";
+import { Wallet } from "../wallets/near";
+import { NetworkId, GuestbookNearContract } from "../config";
 
 const wallet = new Wallet({
   createAccessKeyFor: GuestbookNearContract,
