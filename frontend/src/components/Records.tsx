@@ -21,9 +21,14 @@ export default function Records({ records }) {
   const [images, setImages] = useState({});
   useEffect(() => {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-    mapRef.current = new mapboxgl.Map({
-      container: mapContainerRef.current,
-    });
+    if (!mapRef.current) {
+      mapRef.current = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        center: [-74, 40.71], // Optionally, set a default center and zoom level
+        zoom: 0,
+      });
+    }
+
     // Add markers for all records
     mapRef.current.on("load", () => {
       // Prepare GeoJSON data from records
@@ -33,20 +38,29 @@ export default function Records({ records }) {
           type: "Feature",
           properties: {
             description: `
-              <div>
-                <h3>${record.species}</h3>
-                <img src="${record.image_blob_id.length > 10 ? record.image_blob_id : DEFAULT_IMAGE}" alt="${record.species}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;"/>
-                <p><strong>Latitude:</strong> ${record.latitude}</p>
-                <p><strong>Longitude:</strong> ${record.longitude}</p>
-                <p><strong>Time Captured:</strong> ${record.time_captured}</p>
-                <p><strong>Description:</strong> ${record.description}</p>
-                <p><strong>User Address:</strong> ${record.user_address}</p>
-              </div>
-            `,
+                <div>
+                  <h3>${record.species}</h3>
+                  <img src="${
+                    record.image_blob_id.length > 10
+                      ? record.image_blob_id
+                      : DEFAULT_IMAGE
+                  }" alt="${
+              record.species
+            }" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;"/>
+                  <p><strong>Latitude:</strong> ${record.latitude}</p>
+                  <p><strong>Longitude:</strong> ${record.longitude}</p>
+                  <p><strong>Time Captured:</strong> ${record.time_captured}</p>
+                  <p><strong>Description:</strong> ${record.description}</p>
+                  <p><strong>User Address:</strong> ${record.user_address}</p>
+                </div>
+              `,
           },
           geometry: {
             type: "Point",
-            coordinates: [parseFloat(record.longitude), parseFloat(record.latitude)],
+            coordinates: [
+              parseFloat(record.longitude),
+              parseFloat(record.latitude),
+            ],
           },
         })),
       };
@@ -68,40 +82,40 @@ export default function Records({ records }) {
           "circle-color": "#B42222",
         },
       });
-
-      // Add a click event for popups
-      mapRef.current.on("click", "places", (e) => {
-        // @ts-ignore
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const description = e.features[0].properties.description;
-
-        // Ensure the popup stays at the same point
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-        }
-
-        new mapboxgl.Popup()
-          .setLngLat(coordinates)
-          .setHTML(description)
-          .addTo(mapRef.current);
-      });
-
-      // Change the cursor to a pointer when the mouse is over the places layer
-      mapRef.current.on("mouseenter", "places", () => {
-        mapRef.current.getCanvas().style.cursor = "pointer";
-      });
-
-      // Change it back to default when it leaves
-      mapRef.current.on("mouseleave", "places", () => {
-        mapRef.current.getCanvas().style.cursor = "";
-      });
     });
-  
+
+    // Add a click event for popups
+    mapRef.current.on("click", "places", (e) => {
+      // @ts-ignore
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const description = e.features[0].properties.description;
+
+      // Ensure the popup stays at the same point
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      new mapboxgl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(description)
+        .addTo(mapRef.current);
+    });
 
     return () => {
-      mapRef.current.remove();
+      if (mapRef.current) {
+        // Ensure the event listeners are removed properly
+        // @ts-ignore
+        mapRef.current.off("load");
+        // @ts-ignore
+        mapRef.current.off("click", "places");
+
+        // Finally, remove the map instance
+        mapRef.current.remove();
+        mapRef.current = null; // Optional cleanup step
+      }
     };
-  }, []);
+  }, [records]); // Add `records` to the dependency array
+
   useEffect(() => {
     const fetchImages = async () => {
       const newImages = {};
@@ -159,7 +173,11 @@ export default function Records({ records }) {
             Species: {record.species}
           </h3>
           <img
-            src={`${images[record.image_blob_id]?.length > 10 ? images[record.image_blob_id] : DEFAULT_IMAGE}`}
+            src={`${
+              images[record.image_blob_id]?.length > 10
+                ? images[record.image_blob_id]
+                : DEFAULT_IMAGE
+            }`}
             alt={record.species}
             style={{
               width: "100%",

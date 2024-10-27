@@ -131,29 +131,6 @@ export default function NeardexPage() {
           </h2>
           <Records records={animals} />
         </div>
-        <div style={{ flex: 1, animation: "slideIn 0.5s ease-out 0.2s" }}>
-          <h2
-            style={{ fontSize: "24px", marginBottom: "15px", color: "#4a4a4a" }}
-          >
-            Map
-          </h2>
-          <div
-            style={{
-              backgroundColor: "#ffffff",
-              height: "400px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: "25px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              color: "#4a4a4a",
-              fontSize: "18px",
-            }}
-          >
-            <Map size={48} style={{ marginRight: "10px" }} />
-            Map Placeholder
-          </div>
-        </div>
       </div>
     </div>
   );
