@@ -52,6 +52,7 @@ export default function Records({ records }) {
       // Add the source to the map
       mapRef.current.addSource("places", {
         type: "geojson",
+        // @ts-ignore
         data: geojsonData,
       });
 
@@ -68,6 +69,7 @@ export default function Records({ records }) {
 
       // Add a click event for popups
       mapRef.current.on("click", "places", (e) => {
+        // @ts-ignore
         const coordinates = e.features[0].geometry.coordinates.slice();
         const description = e.features[0].properties.description;
 
