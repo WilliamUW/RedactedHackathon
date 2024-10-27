@@ -22,6 +22,77 @@ export default function Records({ records }) {
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
     });
+    // Add markers for all records
+    mapRef.current.on("load", () => {
+      // Prepare GeoJSON data from records
+      const geojsonData = {
+        type: "FeatureCollection",
+        features: records.map((record) => ({
+          type: "Feature",
+          properties: {
+            description: `
+              <div>
+                <h3>${record.species}</h3>
+                <img src="${record.image_blob_id}" alt="${record.species}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;"/>
+                <p><strong>Latitude:</strong> ${record.latitude}</p>
+                <p><strong>Longitude:</strong> ${record.longitude}</p>
+                <p><strong>Time Captured:</strong> ${record.time_captured}</p>
+                <p><strong>Description:</strong> ${record.description}</p>
+                <p><strong>User Address:</strong> ${record.user_address}</p>
+              </div>
+            `,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [parseFloat(record.longitude), parseFloat(record.latitude)],
+          },
+        })),
+      };
+
+      // Add the source to the map
+      mapRef.current.addSource("places", {
+        type: "geojson",
+        data: geojsonData,
+      });
+
+      // Add a layer for the markers
+      mapRef.current.addLayer({
+        id: "places",
+        type: "circle",
+        source: "places",
+        paint: {
+          "circle-radius": 6,
+          "circle-color": "#B42222",
+        },
+      });
+
+      // Add a click event for popups
+      mapRef.current.on("click", "places", (e) => {
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const description = e.features[0].properties.description;
+
+        // Ensure the popup stays at the same point
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML(description)
+          .addTo(mapRef.current);
+      });
+
+      // Change the cursor to a pointer when the mouse is over the places layer
+      mapRef.current.on("mouseenter", "places", () => {
+        mapRef.current.getCanvas().style.cursor = "pointer";
+      });
+
+      // Change it back to default when it leaves
+      mapRef.current.on("mouseleave", "places", () => {
+        mapRef.current.getCanvas().style.cursor = "";
+      });
+    });
+  
 
     return () => {
       mapRef.current.remove();
